@@ -50,7 +50,8 @@ struct DoubleHashProber : public Prober<KeyType> {
     void init(HASH_INDEX_T start, HASH_INDEX_T m, const KeyType& key) {
         Prober<KeyType>::init(start, m, key);
         HASH_INDEX_T mod = modVals[0];
-        for (int i = 0; i < modCount && modVals[i] < m; ++i) mod = modVals[i];
+        for (int i = 0; i < modCount && modVals[i] < m; ++i)
+            mod = modVals[i];
         step_ = mod - (h2_(key) % mod);
     }
 
@@ -119,7 +120,7 @@ public:
     size_t size()  const { return count_; }
 
     void insert(const ItemType& p) {
-        // Resize if current loading factor reaches threshold
+        // Resize if loading factor >= alpha
         if (double(used_) / table_.size() >= alpha_)
             resize();
         HASH_INDEX_T loc = probe(p.first);
@@ -129,9 +130,6 @@ public:
             table_[loc] = new HashItem(p);
             ++count_; ++used_;
         } else {
-            table_[loc]->item.second = p.second;
-        }
-    } else {
             table_[loc]->item.second = p.second;
         }
     }
@@ -153,12 +151,8 @@ public:
     }
 
     // operator[] overloads
-    ValueType& operator[](const KeyType& key) {
-        return at(key);
-    }
-    const ValueType& operator[](const KeyType& key) const {
-        return at(key);
-    }
+    ValueType& operator[](const KeyType& key) { return at(key); }
+    const ValueType& operator[](const KeyType& key) const { return at(key); }
 
     ItemType* find(const KeyType& key) {
         auto p = internalFind(key);
@@ -203,7 +197,7 @@ private:
         HASH_INDEX_T loc = probe(key);
         if (loc == npos) return nullptr;
         auto p = table_[loc];
-        return (p && !p->deleted) ? p : nullptr;
+        return (p && !p->deleted)? p : nullptr;
     }
 
     void resize() {
