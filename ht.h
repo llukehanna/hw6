@@ -5,6 +5,8 @@
 #include <iostream>
 #include <cmath>
 #include <stdexcept>
+#include <utility>
+#include <functional>
 
 typedef size_t HASH_INDEX_T;
 
