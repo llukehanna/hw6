@@ -119,13 +119,19 @@ public:
     size_t size()  const { return count_; }
 
     void insert(const ItemType& p) {
-        if (double(used_ + 1) / table_.size() >= alpha_) resize();
+        // Resize if current loading factor reaches threshold
+        if (double(used_) / table_.size() >= alpha_)
+            resize();
         HASH_INDEX_T loc = probe(p.first);
-        if (loc == npos) throw std::logic_error("HashTable full");
+        if (loc == npos)
+            throw std::logic_error("HashTable full");
         if (!table_[loc]) {
             table_[loc] = new HashItem(p);
             ++count_; ++used_;
         } else {
+            table_[loc]->item.second = p.second;
+        }
+    } else {
             table_[loc]->item.second = p.second;
         }
     }
